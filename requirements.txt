@@ -1,0 +1,5 @@
+python-dotenv
+# Add your app dependencies below, for example:
+# requests
+# aiohttp
+# discord.py

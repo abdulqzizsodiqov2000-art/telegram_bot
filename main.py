@@ -20,9 +20,15 @@ logger = logging.getLogger(__name__)
 TOKEN = os.getenv("TELEGRAM_TOKEN", "").strip()
 if not TOKEN:
     logger.error("❌ TELEGRAM_TOKEN environment variable not set!")
-    logger.error("📝 On Render: Settings → Environment → Add TELEGRAM_TOKEN")
-    logger.error("💻 Locally: Create .env file with TELEGRAM_TOKEN=your_token_here")
-    raise ValueError("TELEGRAM_TOKEN is required. Check logs above for instructions.")
+    logger.error("📝 On Render Dashboard:")
+    logger.error("   1. Click: Settings")
+    logger.error("   2. Click: Environment")
+    logger.error("   3. Add Variable: TELEGRAM_TOKEN = <your_token_from_BotFather>")
+    logger.error("   4. Click Save (auto-deploy will start)")
+    logger.error("")
+    logger.error("💻 Get token: Message @BotFather on Telegram → /newbot")
+    import sys
+    sys.exit(1)
 
 numbers = {}
 

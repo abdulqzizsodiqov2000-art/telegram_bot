@@ -45,13 +45,15 @@ menu = [
     ["❤️ Love Test"],
 ]
 
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🎮 O'yinlar botiga xush kelibsiz!\nKerakli o'yinni tanlang.",
         reply_markup=ReplyKeyboardMarkup(menu, resize_keyboard=True)
     )
 
-async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user.id
     text = update.message.text
 
@@ -131,23 +133,19 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     """Start the bot."""
-    try:
-        logger.info("🚀 Bot starting...")
-        app = Application.builder().token(TOKEN).build()
-        
-        # Add handlers
-        app.add_handler(CommandHandler("start", start))
-        app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message))
-        
-        logger.info("✅ Bot successfully initialized!")
-        logger.info("🎮 Waiting for messages...")
-        
-        # Start polling
-        app.run_polling(allowed_updates=Update.ALL_TYPES)
-        
-    except Exception as e:
-        logger.error(f"Fatal error: {e}", exc_info=True)
-        raise
+    logger.info("🚀 Bot starting...")
+    app = Application.builder().token(TOKEN).build()
+    
+    # Add handlers
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
+    
+    logger.info("✅ Bot initialized!")
+    logger.info("🎮 Waiting for messages...")
+    
+    # Start polling
+    app.run_polling()
+
 
 if __name__ == "__main__":
     main()

@@ -1,11 +1,55 @@
-Render deploy (24/7) quick instructions
+# 🎮 Telegram Games Bot - Render Deployment Guide
 
-1. Copy `.env.example` to `.env` and fill your secrets.
+## ⚡ Setup Instructions
 
-2. Commit your code and push to a Git repo (GitHub/GitLab).
+### 1. Get Telegram Bot Token
+- Message [@BotFather](https://t.me/BotFather) on Telegram
+- Send `/start` → `/newbot` → follow instructions
+- Copy the token (example: `123456789:ABCdefGHIjklmnOPQRstuvWXYZ`)
 
-3. On Render, create a new service and connect your repo, or enable `render.yaml` by using the Render Dashboard's "Create New > From Repo" flow.
+### 2. Add Environment Variables on Render
+**CRITICAL STEP** - Bot won't run without this!
 
-4. Use the `background` service type (the included `render.yaml` uses `start.sh`). Ensure environment variables from `.env` are added in the Render Dashboard (do NOT upload your `.env` file).
+1. Go to your Render service
+2. Click **Settings** → **Environment**
+3. Add this variable:
+   - **Key:** `TELEGRAM_TOKEN`
+   - **Value:** `your_actual_token_from_BotFather`
+4. Click **Save** (it will auto-deploy)
 
-5. If your bot requires a web port (for health checks), add a tiny web endpoint in `main.py` or run as a `web` service and listen on `$PORT`.
+### 3. Deploy
+1. Push code to GitHub/GitLab
+2. On Render, create **New** → **Background Worker**
+3. Select your repo
+4. Name: `telegram-bot` (or any name)
+5. Runtime: `Python 3`
+6. Build Command: `pip install -r requirements.txt`
+7. Start Command: `bash start.sh`
+8. Plan: **Free** (or Paid)
+9. **Important:** Add environment variable before deploying!
+10. Click **Create Background Worker**
+
+## 🔧 Local Testing
+```bash
+# Create .env file
+cp .env.example .env
+
+# Fill your token
+# TELEGRAM_TOKEN=your_token_here
+
+# Install and run
+pip install -r requirements.txt
+python main.py
+```
+
+## ❌ Troubleshooting
+
+**Error: "TELEGRAM_TOKEN environment variable not set!"**
+- ✅ Go to Render Dashboard → Settings → Environment
+- ✅ Add `TELEGRAM_TOKEN` with your actual token
+- ✅ Save and wait for auto-deploy (1-2 min)
+
+**Bot doesn't respond**
+- Check Render logs for errors
+- Verify token is correct from @BotFather
+- Restart the service in Render Dashboard

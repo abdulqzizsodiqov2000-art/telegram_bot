@@ -9,14 +9,20 @@ from telegram.ext import (
 )
 import random
 import logging
+from dotenv import load_dotenv
+
+# Load .env file if exists (for local testing)
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-TOKEN = os.getenv("TELEGRAM_TOKEN", "")
+TOKEN = os.getenv("TELEGRAM_TOKEN", "").strip()
 if not TOKEN:
-    logger.error("TELEGRAM_TOKEN environment variable not set!")
-    raise ValueError("TELEGRAM_TOKEN is required")
+    logger.error("❌ TELEGRAM_TOKEN environment variable not set!")
+    logger.error("📝 On Render: Settings → Environment → Add TELEGRAM_TOKEN")
+    logger.error("💻 Locally: Create .env file with TELEGRAM_TOKEN=your_token_here")
+    raise ValueError("TELEGRAM_TOKEN is required. Check logs above for instructions.")
 
 numbers = {}
 

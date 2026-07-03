@@ -25,7 +25,7 @@ TOKEN = os.getenv("TELEGRAM_TOKEN", "").strip()
 if not TOKEN:
     logger.error("❌ TELEGRAM_TOKEN not set!")
     logger.error("Go to: https://dashboard.render.com/ → Settings → Environment")
-    logger.error("Add: TELEGRAM_TOKEN = 8736854784:AAF1N4sNNYO0vKBITVSBuaVCvd0BZwllyNc")
+    logger.error("Add: TELEGRAM_TOKEN = <BotFather'dan olgan tokeningiz>")
     raise ValueError("Token required!")
 
 # Game state

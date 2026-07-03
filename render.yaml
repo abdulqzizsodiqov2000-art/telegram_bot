@@ -10,3 +10,5 @@ services:
       - key: TELEGRAM_TOKEN
         scope: run
         sync: false
+      - key: PYTHON_VERSION
+        value: 3.11.9

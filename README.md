@@ -36,7 +36,7 @@ git push origin main
 9. **Environment Variables** qismi:
    - Klik: **Add Environment Variable**
    - **Key:** `TELEGRAM_TOKEN`
-   - **Value:** `8736854784:AAF1N4sNNYO0vKBITVSBuaVCvd0BZwllyNc` (siz olgan token)
+   - **Value:** `<BotFather'dan olgan tokeningiz>` (o'zingiz olgan haqiqiy token)
    - **Save** tugmasini bosing
 
 10. **Create Background Worker** tugmasini bosing

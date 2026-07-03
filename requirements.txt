@@ -1,5 +1,2 @@
-python-dotenv
-# Add your app dependencies below, for example:
-# requests
-# aiohttp
-# discord.py
+python-telegram-bot==21.3
+python-dotenv==1.0.0

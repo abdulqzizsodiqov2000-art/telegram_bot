@@ -1,3 +1,4 @@
+import os
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import (
     Application,
@@ -7,8 +8,15 @@ from telegram.ext import (
     filters,
 )
 import random
+import logging
 
-TOKEN = "8736854784:AAF1N4sNNYO0vKBITVSBuaVCvd0BZwllyNc"
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+TOKEN = os.getenv("TELEGRAM_TOKEN", "")
+if not TOKEN:
+    logger.error("TELEGRAM_TOKEN environment variable not set!")
+    raise ValueError("TELEGRAM_TOKEN is required")
 
 numbers = {}
 
@@ -121,10 +129,20 @@ async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("Menyudan o'yin tanlang.")
 
-app = Application.builder().token(TOKEN).build()
+async def main():
+    app = Application.builder().token(TOKEN).build()
+    
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message))
+    
+    logger.info("✅ Bot ishga tushdi...")
+    
+    async with app:
+        await app.start()
+        await app.updater.start_polling()
+        await app.updater.idle()
+        await app.stop()
 
-app.add_handler(CommandHandler("start", start))
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message))
-
-print("✅ Bot ishga tushdi...")
-app.run_polling()
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())

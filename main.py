@@ -1,151 +1,90 @@
-#!/usr/bin/env python3
-"""Telegram Games Bot"""
-
-import os
-import logging
+from telegram import Update
+from telegram.ext import Application, CommandHandler, ContextTypes
 import random
-from dotenv import load_dotenv
 
-from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import (
-    Application,
-    CommandHandler,
-    MessageHandler,
-    ContextTypes,
-    filters,
-)
+# Bot tokeningizni shu yerga yozing
+TOKEN = "8736854784:AAF1N4sNNYO0vKBITVSBuaVCvd0BZwllyNc"
 
-# Setup
-load_dotenv()
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-
-# Token
-TOKEN = os.getenv("TELEGRAM_TOKEN", "").strip()
-if not TOKEN:
-    logger.error("❌ TELEGRAM_TOKEN not set!")
-    logger.error("Go to: https://dashboard.render.com/ → Settings → Environment")
-    logger.error("Add: TELEGRAM_TOKEN = <BotFather'dan olgan tokeningiz>")
-    raise ValueError("Token required!")
-
-# Game state
-games = {}
-
-# Menu
-menu = [
-    ["🎲 Son topish"],
-    ["🎲 Zar tashlash"],
-    ["🪙 Tanga tashlash"],
-    ["✊ Tosh-Qaychi-Qog'oz"],
-    ["➕ Matematika"],
-    ["🎯 Quiz"],
-    ["🔠 So'z topish"],
-    ["🔢 Juft yoki Toq"],
-    ["🎰 Slot"],
-    ["❤️ Love Test"],
+# 20 ta yaxshi omad
+good_luck = [
+    "🎉 Bugun juda omadli kuningiz!",
+    "💰 Katta pul topishingiz mumkin.",
+    "❤️ Sevgan insoningiz sizni xursand qiladi.",
+    "🏆 Ishlaringiz muvaffaqiyatli bo'ladi.",
+    "🌟 Omad siz tomonda.",
+    "🎁 Kutilmagan sovg'a olasiz.",
+    "😊 Kayfiyatingiz a'lo bo'ladi.",
+    "📚 O'qishda muvaffaqiyat kutmoqda.",
+    "🚗 Yaxshi safar kutmoqda.",
+    "💼 Ishingizda o'sish bo'ladi.",
+    "🤝 Yangi do'st orttirasiz.",
+    "🍀 Bugun eng omadli kunlardan biri.",
+    "🎯 Maqsadingizga erishasiz.",
+    "🏡 Oilangiz bilan baxtli vaqt o'tkazasiz.",
+    "💎 Foydali imkoniyat chiqadi.",
+    "🥇 G'alaba sizniki bo'ladi.",
+    "📱 Yaxshi xabar olasiz.",
+    "🎊 Orzuingiz amalga oshadi.",
+    "🌈 Quvonchli voqealar bo'ladi.",
+    "⭐ Omad sizga kulib boqmoqda."
 ]
 
+# 20 ta yomon omad
+bad_luck = [
+    "😕 Bugun ehtiyot bo'ling.",
+    "💸 Keraksiz xarajat qilishingiz mumkin.",
+    "⚠️ Shoshilmang, xato qilishingiz mumkin.",
+    "🌧 Kayfiyatingiz biroz tushishi mumkin.",
+    "📵 Keraksiz tortishuvlardan uzoq bo'ling.",
+    "🚫 Bugun tavakkal qilmang.",
+    "😴 Charchoq sezishingiz mumkin.",
+    "📉 Rejalaringiz kechikishi mumkin.",
+    "🤕 Mayda muammolar chiqishi mumkin.",
+    "⏳ Sabr qilish kerak bo'ladi.",
+    "❌ Hamma gapga ishonmang.",
+    "🚷 Ehtiyotkor bo'ling.",
+    "😔 Omad bugun siz tomonda emas.",
+    "📄 Hujjatlarni tekshirib chiqing.",
+    "🚦 Yo'lda ehtiyot bo'ling.",
+    "😶 Sirlaringizni hammaga aytmang.",
+    "📦 Kutilgan narsa kechikishi mumkin.",
+    "💔 Xafa qiladigan gap eshitishingiz mumkin.",
+    "🌪 Kutilmagan vaziyat yuz berishi mumkin.",
+    "☁️ Bugun dam olganingiz ma'qul."
+]
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "🎮 O'yinlar botiga xush kelibsiz!\nKerakli o'yinni tanlang.",
-        reply_markup=ReplyKeyboardMarkup(menu, resize_keyboard=True)
+        "🎰 Omad o'yiniga xush kelibsiz!\n\n"
+        "/omad buyrug'ini yuboring va 5 ta omad natijasini oling!"
     )
 
+async def omad(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    natijalar = []
 
-async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user = update.effective_user.id
-    text = update.message.text
+    # Bir xil natija qayta chiqmasligi uchun
+    yaxshi = random.sample(good_luck, 5)
+    yomon = random.sample(bad_luck, 5)
 
-    if text == "🎲 Son topish":
-        games[user] = {"type": "number", "value": random.randint(1, 10)}
-        await update.message.reply_text("Men 1 dan 10 gacha son o'yladim. Toping!")
-
-    elif user in games and games[user]["type"] == "number":
-        try:
-            guess = int(text)
-            if guess == games[user]["value"]:
-                await update.message.reply_text("🎉 To'g'ri topdingiz!")
-                del games[user]
-            elif guess > games[user]["value"]:
-                await update.message.reply_text("📉 Kichikroq son kiriting.")
-            else:
-                await update.message.reply_text("📈 Kattaroq son kiriting.")
-        except ValueError:
-            pass
-
-    elif text == "🎲 Zar tashlash":
-        await update.message.reply_text(f"🎲 Natija: {random.randint(1,6)}")
-
-    elif text == "🪙 Tanga tashlash":
-        await update.message.reply_text(random.choice(["🟡 Gerb", "⚪ Raqam"]))
-
-    elif text == "✊ Tosh-Qaychi-Qog'oz":
-        bot = random.choice(["✊ Tosh", "✌️ Qaychi", "🖐 Qog'oz"])
-        await update.message.reply_text(f"Bot tanladi: {bot}")
-
-    elif text == "➕ Matematika":
-        a = random.randint(1, 20)
-        b = random.randint(1, 20)
-        games[user] = {"type": "math", "value": a + b}
-        await update.message.reply_text(f"{a} + {b} = ?")
-
-    elif user in games and games[user]["type"] == "math":
-        try:
-            if int(text) == games[user]["value"]:
-                await update.message.reply_text("✅ To'g'ri!")
-            else:
-                await update.message.reply_text(f"❌ Xato. Javob: {games[user]['value']}")
-            del games[user]
-        except ValueError:
-            await update.message.reply_text("Faqat son kiriting!")
-
-    elif text == "🎯 Quiz":
-        games[user] = {"type": "quiz"}
-        await update.message.reply_text("O'zbekiston poytaxti qaysi shahar?\nA) Samarqand\nB) Toshkent\nC) Buxoro")
-
-    elif user in games and games[user]["type"] == "quiz":
-        if text.lower() in ["toshkent", "b)", "b"]:
-            await update.message.reply_text("✅ To'g'ri!")
-            del games[user]
+    for i in range(5):
+        if random.choice([True, False]):
+            natijalar.append(f"🍀 {i+1}. {yaxshi.pop()}")
         else:
-            await update.message.reply_text("❌ Xato. To'g'ri: Toshkent")
-            del games[user]
+            natijalar.append(f"💀 {i+1}. {yomon.pop()}")
 
-    elif text == "🔠 So'z topish":
-        word = random.choice(["PYTHON", "TELEGRAM", "BOT", "GAME"])
-        await update.message.reply_text(f"Yashirin so'z: {word}")
-
-    elif text == "🔢 Juft yoki Toq":
-        son = random.randint(1, 100)
-        natija = "Juft" if son % 2 == 0 else "Toq"
-        await update.message.reply_text(f"{son} — {natija}")
-
-    elif text == "🎰 Slot":
-        icons = ["🍒", "🍋", "🍉", "⭐", "7️⃣"]
-        await update.message.reply_text(f"{random.choice(icons)} | {random.choice(icons)} | {random.choice(icons)}")
-
-    elif text == "❤️ Love Test":
-        await update.message.reply_text(f"❤️ Moslik darajasi: {random.randint(1,100)}%")
-
-    else:
-        await update.message.reply_text("Menyudan o'yin tanlang.")
+    await update.message.reply_text(
+        "🎰 Sizning bugungi 5 ta omadingiz:\n\n"
+        + "\n".join(natijalar)
+    )
 
 def main():
-    """Start the bot."""
-    logger.info("🚀 Bot starting...")
     app = Application.builder().token(TOKEN).build()
-    
-    # Add handlers
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
-    
-    logger.info("✅ Bot initialized!")
-    logger.info("🎮 Waiting for messages...")
-    
-    # Start polling
-    app.run_polling()
 
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("omad", omad))
+
+    print("✅ Bot ishga tushdi...")
+    app.run_polling()
 
 if __name__ == "__main__":
     main()
